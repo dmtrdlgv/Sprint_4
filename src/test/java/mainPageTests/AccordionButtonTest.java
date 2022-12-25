@@ -15,7 +15,7 @@ public class AccordionButtonTest extends ExtraStepsMainPage {
     }
 
     @Parameterized.Parameters
-    public static Object[][] getCities() {
+    public static Object[][] getItem() {
         return new Object[][] {
                 {0, "Сутки — 400 рублей. Оплата курьеру — наличными или картой."},
                 {1, "Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим."},

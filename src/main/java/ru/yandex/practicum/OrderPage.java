@@ -17,8 +17,8 @@ public class OrderPage {
 
     WebDriver driver;
 
-    private final static String BLACKCOLOUR = "black";
-    private final static String GREYCOLOUR = "grey";
+    private final String BLACKCOLOUR = "black";
+    private final String GREYCOLOUR = "grey";
 
     //Инпут "Имя"
     private final By firstnameCustomerInput = By.xpath(".//input[@class='Input_Input__1iN_Z Input_Responsible__1jDKN']");
@@ -88,7 +88,6 @@ public class OrderPage {
     public OrderPage(WebDriver driver) {
         this.driver = driver;
     }
-
 
     //Шаг. Открытие страницы заказов
     public void openOrderPage() {
