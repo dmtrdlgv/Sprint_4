@@ -31,7 +31,9 @@ public class AccordionButtonTest extends ExtraSteps {
 
     @Test
     public void checkAccordionCaptionText(){
+
         MainPage mainPage = new MainPage(chromeDriver);
+
         mainPage.openMainPage();
         mainPage.isOpenMainPage();
         mainPage.checkAboutImportantCaption();
