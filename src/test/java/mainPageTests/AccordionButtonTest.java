@@ -6,10 +6,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
-public class AccordionButtonTest extends ExtraSteps {
+public class AccordionButtonTest extends ExtraStepsMainPage {
     private final int accordionItemNumber;
     private final String accordionItemText;
-
     public AccordionButtonTest(int accordionItemNumber, String accordionItemText) {
         this.accordionItemNumber = accordionItemNumber;
         this.accordionItemText = accordionItemText;
@@ -31,9 +30,7 @@ public class AccordionButtonTest extends ExtraSteps {
 
     @Test
     public void checkAccordionCaptionText(){
-
         MainPage mainPage = new MainPage(chromeDriver);
-
         mainPage.openMainPage();
         mainPage.isOpenMainPage();
         mainPage.checkAboutImportantCaption();

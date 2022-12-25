@@ -1,5 +1,7 @@
 package ru.yandex.practicum;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -19,7 +21,7 @@ public class OrderPage {
     private final static String GREYCOLOUR = "grey";
 
     //Инпут "Имя"
-    private final By firstnameCustomerInput = By.xpath(".//input[@class='Input_Input__1iN_Z Input_Error__1Tx5d Input_Responsible__1jDKN']");
+    private final By firstnameCustomerInput = By.xpath(".//input[@class='Input_Input__1iN_Z Input_Responsible__1jDKN']");
 
     //Инпут "Фамилия"
     private final By lastnameCustomerInput = By.xpath(".//input[@placeholder='* Фамилия']");
@@ -48,6 +50,9 @@ public class OrderPage {
     //Инпут Даты привоза самоката "Когда привезти самокат"
     private final By dateOfDeliveryScooterInput = By.xpath(".//input[@placeholder='* Когда привезти самокат']");
 
+    //кнопка выбранной даты календаря
+    private final By dateOfDeliveryScooterButton = By.xpath(".//div[starts-with(@class,'react-datepicker__day react-datepicker__day') and @tabindex='0']");
+
     //Селект "Срок аренды" самоката
     private final By scooterRentalTermSelect = By.xpath(".//div[@class='Dropdown-placeholder']");
 
@@ -55,13 +60,12 @@ public class OrderPage {
     private final By scooterRentalTermList = By.xpath(".//div[@class='Dropdown-option']");
 
     //Блок выбора цвета самоката
-    private final By scooterColourDiv = By.xpath(".//div[@class='Order_Checkboxes__3lWSI Order_FilledContainer__2MKAk']");
 
     //Чек-бокс выбора цвета самоката "чёрный жемчуг"
-    private final By scooterColourBlackCheckBox = By.cssSelector("//input[@id='black']");
+    private final By scooterColourBlackCheckBox = By.xpath("//input[@id='black']/..");
 
     //Чек-бокс выбора цвета самоката "серая безысходность"
-    private final By scooterColourGreyCheckBox = By.cssSelector("//input[@id='grey']");
+    private final By scooterColourGreyCheckBox = By.xpath("//input[@id='grey']");
 
     //Инпут Комментария к заказу
     private final By commentOrderInput = By.xpath(".//input[@placeholder='Комментарий для курьера']");
@@ -78,12 +82,22 @@ public class OrderPage {
     //Заголовок модального окна успешного оформления заказа
     private final By modalSuccessfulOrderHeader = By.xpath(".//div[@class='Order_ModalHeader__3FDaJ'  and text()='Заказ оформлен']");
 
+    //Кнопка согласия куки
+    private final By cookieButton = By.className("App_CookieButton__3cvqF");
 
     public OrderPage(WebDriver driver) {
         this.driver = driver;
     }
 
-    //Проверка открытия окна заказа
+
+    //Шаг. Открытие страницы заказов
+    public void openOrderPage() {
+        driver.get("https://qa-scooter.praktikum-services.ru/order");
+        driver.manage().window().maximize();
+        driver.findElement(cookieButton).click();
+    }
+
+    //Проверка открытия страницы заказа
     public void isOpenedOrderPage(){
         assertEquals("Заголовок страницы заказа - Для кого самокат", "Для кого самокат",
                 new WebDriverWait(driver, Duration.ofSeconds(5)).until(ExpectedConditions.visibilityOfElementLocated(headerOrderForm)).getText());
@@ -130,7 +144,7 @@ public class OrderPage {
         customerMetroStationSelectClick();
         waitForMetroStationCustomerList();
         String metroStation = selectCustomerMetroStation(itemNumber);
-        new WebDriverWait(driver, Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(metroStationCustomerList));
+        new WebDriverWait(driver, Duration.ofSeconds(3)).until(ExpectedConditions.invisibilityOfElementLocated(metroStationCustomerList));
         assertEquals(driver.findElement(metroStationCustomerSelect).getAttribute("Value"), metroStation);
     }
 
@@ -139,8 +153,17 @@ public class OrderPage {
         driver.findElement(phoneCustomerInput).sendKeys(phoneNumber);
     }
 
+    //Шаг заполнение всех полей первой формы заказа "Для кого самокат"
+    public void fillingAllFieldsInFirstFormOrder(String firstname, String lastname,String address, int itemNumberMetroStation, String phoneNumber) {
+        enterFirstnameCustomerInput(firstname);
+        enterLastnameCustomerInput(lastname);
+        enterAddressCustomerInput(address);
+        isSelectedMetroStation(itemNumberMetroStation);
+        enterPhoneNumber(phoneNumber);
+    }
+
     //Нажать на "Далее"
-    public void clickNext() {
+    public void clickNextButton() {
         driver.findElement(nextButton).click();
     }
 
@@ -150,19 +173,44 @@ public class OrderPage {
                 new WebDriverWait(driver, Duration.ofSeconds(5)).until(ExpectedConditions.visibilityOfElementLocated(headerOrderForm)).getText());
     }
 
-    //Выбор Даты заказа
-    public void selectOrderDate(String orderDate) {
+    //Заполнение инпута Даты заказа
+    public void enterOrderDateInput(String orderDate) {
         driver.findElement(dateOfDeliveryScooterInput).sendKeys(orderDate);
     }
+
+    //Нажатие на кнопку даты в календаре
+    public void clickOrderDateCalendarButton() {
+        new WebDriverWait(driver, Duration.ofSeconds(2)).until(ExpectedConditions.visibilityOfElementLocated(dateOfDeliveryScooterButton)).click();
+    }
+
+    //Шаг. Заполнение поля даты заказа
+    public void fillingInputOrderDate(String orderDate) {
+        enterOrderDateInput(orderDate);
+        clickOrderDateCalendarButton();
+
+    }
+
 
     //Нажатие на селект Срока аренды
     public void scooterRentalTermClick(){
         driver.findElement(scooterRentalTermSelect).click();
     }
 
+    //ожидание появления списка Срока аренды
+    public void waitScooterRentalTermList() {
+        new WebDriverWait(driver, Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(scooterRentalTermList));
+    }
+
     //Выбор значения из селекта Срока аренды
     public void selectItemScooterRentalTerm(){
         driver.findElement(scooterRentalTermList).click();
+    }
+
+    //Шаг заполнения поля срока аренды
+    public void fillingScooterRentalTerm(){
+        scooterRentalTermClick();
+        waitScooterRentalTermList();
+        selectItemScooterRentalTerm();
     }
 
     //Включение чек-бокса черного цвета
@@ -177,11 +225,11 @@ public class OrderPage {
 
     //Включение чек-бокса выбора одного из цветов
     public void enablingOneOfColourCheckBox(String colour) {
-        if (colour == GREYCOLOUR) {
+        if (colour.equals(GREYCOLOUR)) {
             enablingGreyCheckBox();
-        } else if (colour == BLACKCOLOUR) {
+        } else if (colour.equals(BLACKCOLOUR)) {
             enablingBlackCheckBox();
-        };
+        }
     }
 
     //Ввод комментария к заказу
@@ -189,9 +237,18 @@ public class OrderPage {
         driver.findElement(commentOrderInput).sendKeys(comment);
     }
 
-    //Нажать на кнопку заказа
+    //Шаг. Заполнения всех полей второй формы заказа
+    public void fillingAllFieldsInSecondFormOrder(String orderDate, String colour, String comment){
+        fillingInputOrderDate(orderDate);
+        fillingScooterRentalTerm();
+        enablingOneOfColourCheckBox(colour);
+        enterOrderComment(comment);
+    }
+
+
+    //Нажать на кнопку "Заказать"
     public void clickOrderButton(){
-        driver.findElement(orderButton);
+        driver.findElement(orderButton).click();
     }
 
     //Ожидание появления модального окна подтверждения заказа
@@ -200,7 +257,7 @@ public class OrderPage {
     }
 
     //Нажатие на кнопку подтверждение Заказа
-    public void clickConfirmButton() {
+    public void clickModalConfirmButton() {
         driver.findElement(modalConfirmOrderButton).click();
     }
 
@@ -211,8 +268,9 @@ public class OrderPage {
 
     //Проверка текста заголовка модального окна успешного заказа
     public void checkHeaderModalSuccessOrder(){
-        assertEquals("Заголовок модального окна соответствует ожидаемому", "Заказ оформлен",
-                driver.findElement(modalSuccessfulOrderHeader).getText());
+        assertThat(driver.findElement(modalSuccessfulOrderHeader).getText(),containsString("Заказ оформлен"));
 
     }
+
+
 }

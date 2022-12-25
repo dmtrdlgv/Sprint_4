@@ -33,7 +33,7 @@ public class MainPage {
     private final By headerOrderButton = By.xpath(".//button[@class='Button_Button__ra12g']");
 
     //Кнопка "Заказать" в содержимом страницы
-    private final By middleContentOrderButton = By.cssSelector(".Button_Button__ra12g Button_Middle__1CSJM");
+    private final By middleContentOrderButton = By.cssSelector(".Button_Button__ra12g.Button_Middle__1CSJM");
 
     //Кнопка согласия куки
     private final By cookieButton = By.className("App_CookieButton__3cvqF");
@@ -88,8 +88,15 @@ public class MainPage {
         isEqualTextAccordionItem(itemNumber, expectedAccordionItem);
     }
 
+    //Нажать на кнопку "Заказать" в хедере
+    public void clickHeaderOrderButton(){
+        driver.findElement(headerOrderButton).click();
+    }
 
-
+    //Нажать на кнопку "Заказать" в содержимом страницы
+    public void clickContentOrderButton(){
+        driver.findElement(middleContentOrderButton).click();
+    }
 
 
 }
